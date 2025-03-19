@@ -6,7 +6,7 @@ import '../models/todo_list.dart';
 import 'package:intl/intl.dart';
 
 class ApiService {
-  final String baseUrl = 'http://192.168.100.41:8080/api/v1';
+  final String baseUrl = 'url_to_backendAPI';
 
   final _storage = FlutterSecureStorage();
 
@@ -46,36 +46,53 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
-      // Assuming your backend returns the JWT in a field called 'token'
       return responseData['token'];
     } else {
-      // Handle login failure
       print('Login failed with status code: ${response.statusCode}');
       print('Response body: ${response.body}');
       return null;
     }
   }
 
-  Future<bool> registerUser(String username, String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/users/register'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'username': username,
-        'email': email,
-        'password': password,
-      }),
-    );
 
-    if (response.statusCode == 201) {
-      print('User registered successfully');
-      return true; // Or you could return the response body if needed
-    } else {
-      print('Failed to register user with status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      return false; // Or throw an exception
+  Future<String?> registerUser(String username, String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/users/register'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'username': username,
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      print('Registration Response Status Code: ${response.statusCode}');
+      print('Registration Response Body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        return null;
+      } else if (response.statusCode == 400) {
+
+        try {
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          if (responseData.containsKey('message') && responseData['message'] == 'Username already exists') {
+            return 'Username already taken';
+          } else {
+            return 'Failed to create account. Please try again.';
+          }
+        } catch (e) {
+          print('Error decoding response body: $e');
+          return 'Failed to create account. Please try again.';
+        }
+      } else {
+        return 'Failed to create account. Please try again.';
+      }
+    } catch (error) {
+      print('Error during registration: $error');
+      return 'Failed to connect to the server.';
     }
   }
 
@@ -97,7 +114,7 @@ class ApiService {
     } else {
       print('Failed to delete todo list with ID $id. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
-      return false; // Or throw an exception
+      return false;
     }
   }
 
@@ -107,14 +124,13 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.put(
-      Uri.parse('$baseUrl/todo-lists/$id'), // Assuming your endpoint is like this
+      Uri.parse('$baseUrl/todo-lists/$id'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
-        'name': newTitle, // Assuming your backend expects 'name' for the title
-        // Add other fields if your backend expects them for editing
+        'name': newTitle,
       }),
     );
 
@@ -124,7 +140,7 @@ class ApiService {
     } else {
       print('Failed to update todo list with ID $id. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
-      return false; // Or throw an exception
+      return false;
     }
   }
 
@@ -135,14 +151,14 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.post(
-      Uri.parse('$baseUrl/todo-lists'), // Assuming this is your create endpoint
+      Uri.parse('$baseUrl/todo-lists'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
-        'name': title, // Assuming your backend expects 'name' for the title
-        'description': description, // Assuming your backend expects 'description'
+        'name': title,
+        'description': description,
       }),
     );
 
@@ -152,7 +168,7 @@ class ApiService {
     } else {
       print('Failed to create todo list with status code: ${response.statusCode}');
       print('Response body: ${response.body}');
-      return false; // Or throw an exception
+      return false;
     }
   }
 
@@ -162,7 +178,7 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.get(
-      Uri.parse('$baseUrl/todo-items/lists/$todoListId'), // Updated endpoint to match your backend URL
+      Uri.parse('$baseUrl/todo-items/lists/$todoListId'),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },
@@ -189,7 +205,7 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
 
-    // Format the dueDate string to the required format
+
     final formattedDueDate = _formatDateTime(dueDateString);
 
     final response = await http.post(
@@ -202,7 +218,7 @@ class ApiService {
         'name': name,
         'description': description,
         'dueDate': formattedDueDate,
-        'todoListId': todoListId, // Changed this line
+        'todoListId': todoListId,
       }),
     );
     if (response.statusCode == 201) {
@@ -221,7 +237,7 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
 
-    // Format the dueDate string to the required format
+
     final formattedDueDate = _formatDateTime(dueDateString);
 
     final response = await http.put(
@@ -248,26 +264,26 @@ class ApiService {
     }
   }
 
-  // Helper function to format the date
+  // function to format the date
   String _formatDateTime(String dateString) {
     try {
-      final dateTime = DateTime.parse(dateString); // Try parsing if it's already in a parsable format
+      final dateTime = DateTime.parse(dateString);
       final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-      return formatter.format(dateTime); // Format to UTC to avoid timezone issues
+      return formatter.format(dateTime);
     } catch (e) {
-      // If parsing fails (e.g., if the input is in yy/mm/dd format),
-      // you might want to try parsing with a different format or handle the error.
+
       print('Error parsing date: $e');
-      return dateString; // Return the original string as a fallback
+      return dateString;
     }
   }
+
   Future<bool> deleteTodoItem(int todoListId, int itemId) async {
     final String? token = await _storage.read(key: 'jwt_token');
     if (token == null) {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.delete(
-      Uri.parse('$baseUrl/todo-items/$itemId'), // Updated endpoint with itemId
+      Uri.parse('$baseUrl/todo-items/$itemId'),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },
@@ -295,11 +311,11 @@ class ApiService {
       },
       body: jsonEncode(<String, String>{
         'id': todoItem.id.toString(),
-        'name': todoItem.name, // Include the name
-        'description': todoItem.description ?? '', // Include the description (handle null)
+        'name': todoItem.name,
+        'description': todoItem.description ?? '',
         'status': isCompleted ? 'COMPLETED' : 'PENDING',
-        'dueDate': todoItem.dueDate, // Include the due date
-        // You might need to send the todoListId as well, depending on your backend logic
+        'dueDate': todoItem.dueDate,
+
       }),
     );
     if (response.statusCode == 200) {
@@ -343,16 +359,15 @@ class ApiService {
     }
 
     try {
-      // First, get the current user's ID from the /me endpoint
-      final userProfile = await getUserProfile();
-      final userId = userProfile['id']; // Assuming your /users/me endpoint returns the ID
 
+      final userProfile = await getUserProfile();
+      final userId = userProfile['id'];
       if (userId == null) {
         throw Exception('Could not retrieve current user ID');
       }
 
       final response = await http.put(
-        Uri.parse('$baseUrl/users/$userId'), // Use the /users/{id} endpoint
+        Uri.parse('$baseUrl/users/$userId'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
@@ -376,6 +391,4 @@ class ApiService {
       return false;
     }
   }
-
-// You'll add more methods here for creating, updating, deleting todo lists and items
 }

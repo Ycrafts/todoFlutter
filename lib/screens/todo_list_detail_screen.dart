@@ -44,12 +44,10 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
       );
     }
   }
-
   Future<void> _createTodoItem() async {
-    print('TodoList ID when creating item: ${widget.todoList.id}');
     TextEditingController nameController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
-    String? selectedDueDate; // Use a String? to store the formatted date
+    String? selectedDueDate;
 
     return showDialog(
       context: context,
@@ -57,29 +55,56 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateDialog) {
             return AlertDialog(
-              title: Text('Add New Todo Item'),
+              backgroundColor: ColorPalette.backgroundColorDark,
+              title: Text('Add New Todo Item', style: TextStyle(color: ColorPalette.textColorPrimaryDark)),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     TextField(
                       controller: nameController,
-                      decoration: InputDecoration(hintText: 'Item name'),
+                      style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+                      decoration: InputDecoration(
+                        hintText: 'Item name',
+                        hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+                        border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+                      ),
                     ),
                     SizedBox(height: 10),
                     TextField(
                       controller: descriptionController,
-                      decoration: InputDecoration(hintText: 'Description'),
+                      style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+                      decoration: InputDecoration(
+                        hintText: 'Description',
+                        hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+                        border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+                      ),
                       maxLines: 3,
                     ),
                     SizedBox(height: 10),
-                    GestureDetector( // Use GestureDetector to make the date area tappable
+                    GestureDetector(
                       onTap: () async {
                         final DateTime? picked = await showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: ThemeData.dark().copyWith(
+                                colorScheme: ColorScheme.dark(
+                                  primary: ColorPalette.primaryColorDark,
+                                  onPrimary: ColorPalette.textColorPrimaryDark,
+                                  surface: ColorPalette.backgroundColorDark,
+                                  onSurface: ColorPalette.textColorPrimaryDark,
+                                ),
+                                dialogBackgroundColor: ColorPalette.backgroundColorDark,
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
                         if (picked != null) {
                           setStateDialog(() {
@@ -90,10 +115,15 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
                       child: InputDecorator(
                         decoration: InputDecoration(
                           labelText: 'Due Date',
+                          labelStyle: TextStyle(color: ColorPalette.textColorSecondaryDark),
                           hintText: 'Select Due Date',
+                          hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
                         ),
                         child: Text(
-                          selectedDueDate ?? 'Tap to select', // Display selected date or 'Tap to select'
+                          selectedDueDate ?? 'Tap to select',
+                          style: TextStyle(color: ColorPalette.textColorPrimaryDark),
                         ),
                       ),
                     ),
@@ -102,17 +132,17 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel'),
+                  child: Text('Cancel', style: TextStyle(color: ColorPalette.textColorSecondaryDark)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Add'),
+                  child: Text('Add', style: TextStyle(color: ColorPalette.textColorSecondaryDark)),
                   onPressed: () async {
                     final itemName = nameController.text;
                     final itemDescription = descriptionController.text;
-                    if (itemName.isNotEmpty && selectedDueDate != null) { // Check if a date was selected
+                    if (itemName.isNotEmpty && selectedDueDate != null) {
                       bool success = await _apiService.createTodoItem(widget.todoList.id!, itemName, itemDescription, selectedDueDate!);
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -143,7 +173,7 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
   Future<void> _editTodoItem(TodoItem todoItem) async {
     TextEditingController nameController = TextEditingController(text: todoItem.name);
     TextEditingController descriptionController = TextEditingController(text: todoItem.description);
-    String? selectedDueDate = todoItem.dueDate; // Initialize with existing due date
+    String? selectedDueDate = todoItem.dueDate;
 
     return showDialog(
       context: context,
@@ -151,40 +181,61 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateDialog) {
             return AlertDialog(
-              title: Text('Edit Todo Item'),
+              backgroundColor: ColorPalette.backgroundColorDark,
+              title: Text('Edit Todo Item', style: TextStyle(color: ColorPalette.textColorPrimaryDark)),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     TextField(
                       controller: nameController,
-                      decoration: InputDecoration(hintText: 'Item name'),
+                      style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+                      decoration: InputDecoration(
+                        hintText: 'Item name',
+                        hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+                        border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+                      ),
                     ),
                     SizedBox(height: 10),
                     TextField(
                       controller: descriptionController,
-                      decoration: InputDecoration(hintText: 'Description'),
+                      style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+                      decoration: InputDecoration(
+                        hintText: 'Description',
+                        hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+                        border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+                      ),
                       maxLines: 3,
                     ),
                     SizedBox(height: 10),
                     GestureDetector(
                       onTap: () async {
-                        DateTime? initialDate;
-
-                        if (selectedDueDate != null) {
-                          initialDate = DateTime.parse(selectedDueDate!); // Parse existing date
-                        } else {
-                          initialDate = DateTime.now();
-                        }
+                        DateTime? initialDate = selectedDueDate != null ? DateTime.parse(selectedDueDate!) : DateTime.now();
                         final DateTime? picked = await showDatePicker(
                           context: context,
                           initialDate: initialDate,
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: ThemeData.dark().copyWith(
+                                colorScheme: ColorScheme.dark(
+                                  primary: ColorPalette.primaryColorDark,
+                                  onPrimary: ColorPalette.textColorPrimaryDark,
+                                  surface: ColorPalette.backgroundColorDark,
+                                  onSurface: ColorPalette.textColorPrimaryDark,
+                                ),
+                                dialogBackgroundColor: ColorPalette.backgroundColorDark,
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
                         print('Picked DateTime: $picked');
                         if (picked != null) {
-                          setStateDialog(() { // Use setStateDialog here
+                          setStateDialog(() {
                             selectedDueDate = DateFormat('yyyy-MM-dd').format(picked);
                           });
                         }
@@ -192,14 +243,15 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
                       child: InputDecorator(
                         decoration: InputDecoration(
                           labelText: 'Due Date',
+                          labelStyle: TextStyle(color: ColorPalette.textColorSecondaryDark),
                           hintText: 'Select Due Date',
+                          hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
                         ),
-                        child: Builder(
-                          builder: (BuildContext context) {
-                            return Text(
-                              selectedDueDate ?? 'Tap to select',
-                            );
-                          },
+                        child: Text(
+                          selectedDueDate ?? 'Tap to select',
+                          style: TextStyle(color: ColorPalette.textColorPrimaryDark),
                         ),
                       ),
                     ),
@@ -208,17 +260,17 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel'),
+                  child: Text('Cancel', style: TextStyle(color: ColorPalette.textColorSecondaryDark)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Save'),
+                  child: Text('Save', style: TextStyle(color: ColorPalette.textColorSecondaryDark)),
                   onPressed: () async {
                     final newName = nameController.text;
                     final newDescription = descriptionController.text;
-                    if (newName.isNotEmpty && selectedDueDate != null) { // Check if a date was selected
+                    if (newName.isNotEmpty && selectedDueDate != null) {
                       print('Sending Due Date to Backend: $selectedDueDate');
                       bool success = await _apiService.editTodoItem(widget.todoList.id!, todoItem.id!, newName, newDescription, selectedDueDate!);
 
@@ -247,110 +299,126 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
       },
     );
   }
-
-  // ... other methods in TodoListDetailScreen remain the same
   Future<void> _toggleTodoItemCompletion(TodoItem todoItem) async {
     bool success = await _apiService.updateTodoItemCompletion(
-      todoItem, // Pass the entire todoItem object here
+      todoItem,
       !todoItem.isCompleted,
     );
     if (success) {
       _loadTodoItems();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content:
-        Text('Failed to update todo item status')),
+        SnackBar(content: Text('Failed to update todo item status')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.todoList.name),
+    return Theme(
+      data: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: ColorPalette.backgroundColorDark,
+        appBarTheme: AppBarTheme(
+          backgroundColor: ColorPalette.appBarColorDark,
+          titleTextStyle: TextStyle(color: ColorPalette.textColorPrimaryDark),
+          iconTheme: IconThemeData(color: ColorPalette.textColorPrimaryDark),
+        ),
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(color: ColorPalette.textColorPrimaryDark),
+          titleMedium: TextStyle(color: ColorPalette.textColorPrimaryDark),
+        ),
+        colorScheme: ColorScheme.dark(
+          primary: ColorPalette.primaryColorDark,
+          secondary: ColorPalette.textColorSecondaryDark,
+          error: ColorPalette.errorColorDark,
+        ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              widget.todoList.description ?? 'No description provided.',
-              style: TextStyle(fontSize: 16),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.todoList.name),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                widget.todoList.description ?? 'No description provided.',
+                style: TextStyle(fontSize: 16, color: ColorPalette.textColorPrimaryDark),
+              ),
             ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<TodoItem>>(
-              future: _todoItemsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: ColorPalette.errorColor)));
-                } else if (snapshot.data != null) {
-                  if (snapshot.data!.isEmpty) {
-                    return Center(child: Text('No todo items yet. Click the "+" button to add one.'));
-                  }
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final todoItem = snapshot.data![index];
-                      return Card(
-                        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        color: ColorPalette.cardBackgroundColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: todoItem.isCompleted,
-                                onChanged: (bool? value) {
-                                  if (value != null) {
-                                    _toggleTodoItemCompletion(todoItem);
-                                  }
-                                },
-                              ),
-                              Expanded(
-                                child: Text(
-                                  todoItem.name,
-                                  style: TextStyle(
-                                    color: ColorPalette.textColorPrimary,
-                                    decoration: todoItem.isCompleted
-                                        ? TextDecoration.lineThrough
-                                        : TextDecoration.none,
+            Expanded(
+              child: FutureBuilder<List<TodoItem>>(
+                future: _todoItemsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: ColorPalette.errorColorDark)));
+                  } else if (snapshot.data != null) {
+                    if (snapshot.data!.isEmpty) {
+                      return Center(child: Text('No todo items yet. Click the "+" button to add one.', style: TextStyle(color: ColorPalette.textColorPrimaryDark)));
+                    }
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final todoItem = snapshot.data![index];
+                        return Card(
+                          margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          color: ColorPalette.cardBackgroundColorDark,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: todoItem.isCompleted,
+                                  onChanged: (bool? value) {
+                                    if (value != null) {
+                                      _toggleTodoItemCompletion(todoItem);
+                                    }
+                                  },
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    todoItem.name,
+                                    style: TextStyle(
+                                      color: ColorPalette.textColorPrimaryDark,
+                                      decoration: todoItem.isCompleted
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                child: Text(todoItem.dueDate),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.edit, color: ColorPalette.iconColor),
-                                onPressed: () => _editTodoItem(todoItem),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete, color: ColorPalette.errorColor),
-                                onPressed: () => _deleteTodoItem(todoItem.id!),
-                              ),
-                            ],
+                                Container(
+                                  child: Text(todoItem.dueDate, style: TextStyle(color: ColorPalette.textColorSecondaryDark)),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.edit, color: ColorPalette.iconColorDark),
+                                  onPressed: () => _editTodoItem(todoItem),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete, color: ColorPalette.errorColorDark),
+                                  onPressed: () => _deleteTodoItem(todoItem.id!),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  return Center(child: Text('No todo items found.', style: TextStyle(color: ColorPalette.textColorPrimary)));
-                }
-              },
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(child: Text('No todo items found.', style: TextStyle(color: ColorPalette.textColorPrimaryDark)));
+                  }
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createTodoItem,
-        child: Icon(Icons.add),
-        backgroundColor: ColorPalette.primaryColor,
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _createTodoItem,
+          child: Icon(Icons.add),
+          backgroundColor: ColorPalette.primaryColorDark,
+        ),
       ),
     );
   }

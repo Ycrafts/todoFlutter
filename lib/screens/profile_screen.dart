@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../theme.dart'; // Import your theme
+import '../theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -59,40 +59,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
+    return Theme(
+      data: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: ColorPalette.backgroundColorDark,
+        appBarTheme: AppBarTheme(
+          backgroundColor: ColorPalette.appBarColorDark,
+          titleTextStyle: TextStyle(color: ColorPalette.textColorPrimaryDark),
+          iconTheme: IconThemeData(color: ColorPalette.textColorPrimaryDark),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: ColorPalette.borderColorDark),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: ColorPalette.primaryColorDark),
+          ),
+          labelStyle: TextStyle(color: ColorPalette.textColorSecondaryDark),
+          hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: ColorPalette.primaryColorDark,
+            foregroundColor: ColorPalette.textColorPrimaryDark,
+          ),
+        ),
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(color: ColorPalette.textColorPrimaryDark),
+          titleMedium: TextStyle(color: ColorPalette.textColorPrimaryDark),
+          labelLarge: TextStyle(color: ColorPalette.textColorPrimaryDark),
+        ),
+        colorScheme: ColorScheme.dark(
+          primary: ColorPalette.primaryColorDark,
+          secondary: ColorPalette.textColorSecondaryDark,
+          error: ColorPalette.errorColorDark,
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Profile'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                controller: _emailController,
+                style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: ColorPalette.textColorSecondaryDark),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _usernameController,
-              decoration: InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _usernameController,
+                style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  labelStyle: TextStyle(color: ColorPalette.textColorSecondaryDark),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+                ),
               ),
-            ),
-            SizedBox(height: 30),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorPalette.primaryColor,
-                foregroundColor: ColorPalette.textColorSecondary,
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: _updateProfile,
+                child: Text('Update Profile'),
               ),
-              onPressed: _updateProfile,
-              child: Text('Update Profile'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

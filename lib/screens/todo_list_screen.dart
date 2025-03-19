@@ -63,20 +63,27 @@ class _TodoListScreenState extends State<TodoListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit Todo List'),
+          title: Text('Edit Todo List', style: TextStyle(color: ColorPalette.textColorPrimaryDark)),
+          backgroundColor: ColorPalette.cardBackgroundColorDark,
           content: TextField(
             controller: titleController,
-            decoration: InputDecoration(hintText: 'New title'),
+            style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+            decoration: InputDecoration(
+              hintText: 'New title',
+              hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+              border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+              focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+            ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: ColorPalette.textColorLinkDark)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Save'),
+              child: Text('Save', style: TextStyle(color: ColorPalette.textColorLinkDark)),
               onPressed: () async {
                 final newTitle = titleController.text;
                 if (newTitle.isNotEmpty) {
@@ -108,31 +115,44 @@ class _TodoListScreenState extends State<TodoListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Create New Todo List'),
+          title: Text('Create New Todo List', style: TextStyle(color: ColorPalette.textColorPrimaryDark)),
+          backgroundColor: ColorPalette.cardBackgroundColorDark,
           content: Column( // Use a Column to arrange the TextFields vertically
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(hintText: 'Title'),
+                style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+                decoration: InputDecoration(
+                  hintText: 'Title',
+                  hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+                ),
               ),
               SizedBox(height: 10),
               TextField(
                 controller: descriptionController,
-                decoration: InputDecoration(hintText: 'Description'),
+                style: TextStyle(color: ColorPalette.textColorPrimaryDark),
+                decoration: InputDecoration(
+                  hintText: 'Description',
+                  hintStyle: TextStyle(color: ColorPalette.textColorHintDark),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.borderColorDark)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorPalette.primaryColorDark)),
+                ),
                 maxLines: 3, // Allow multiple lines for the description
               ),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: ColorPalette.textColorLinkDark)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Create'),
+              child: Text('Create', style: TextStyle(color: ColorPalette.textColorLinkDark)),
               onPressed: () async {
                 final newTitle = titleController.text;
                 final newDescription = descriptionController.text; // Get the description
@@ -163,128 +183,176 @@ class _TodoListScreenState extends State<TodoListScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
+    return Theme(
+      data: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: ColorPalette.backgroundColorDark,
+        appBarTheme: AppBarTheme(
+          backgroundColor: ColorPalette.appBarColorDark,
+          titleTextStyle: TextStyle(color: ColorPalette.textColorPrimaryDark),
+          iconTheme: IconThemeData(color: ColorPalette.textColorPrimaryDark), // For the menu icon
         ),
-        title: Text('Todo Lists'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.account_circle,
-              size: 35,
-            ),
-            onPressed: () {
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfileScreen()),
-              );
-            },
-          ),
-        ],
+        drawerTheme: DrawerThemeData(
+          backgroundColor: ColorPalette.backgroundColorDark,
+        ),
+        listTileTheme: ListTileThemeData(
+          textColor: ColorPalette.textColorPrimaryDark,
+          iconColor: ColorPalette.textColorPrimaryDark,
+        ),
+        cardTheme: CardTheme(
+          color: ColorPalette.cardBackgroundColorDark,
+          margin: EdgeInsets.all(8.0),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
+        ),
+        iconTheme: IconThemeData(color: ColorPalette.iconColorDark),
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(color: ColorPalette.textColorPrimaryDark),
+          titleMedium: TextStyle(color: ColorPalette.textColorPrimaryDark, fontWeight: FontWeight.bold),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: ColorPalette.primaryColorDark,
+          foregroundColor: ColorPalette.textColorPrimaryDark,
+        ),
+        colorScheme: ColorScheme.dark(
+          primary: ColorPalette.primaryColorDark,
+          secondary: ColorPalette.textColorSecondaryDark,
+          error: ColorPalette.errorColorDark,
+        ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: ColorPalette.primaryColor,
-              ),
-              child: Text(
-                'Todo Tracker Menu',
-                style: TextStyle(
-                  color: ColorPalette.textColorSecondary,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.list),
-              title: Text('Todo Lists'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
+      child: Scaffold(
+        appBar: AppBar(
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
               },
             ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Logout'),
-              onTap: () {
-                _logout(context);
+          ),
+          title: Text('Todo Lists'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.account_circle,
+                size: 35,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
               },
             ),
           ],
         ),
-      ),
-      body: FutureBuilder<List<TodoList>>(
-        future: _todoListsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: ColorPalette.errorColor)));
-          } else if (snapshot.data != null) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final todoList = snapshot.data![index];
-                return Card(
-
-                  margin: EdgeInsets.all(8.0),
-                  color: ColorPalette.cardBackgroundColor,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TodoListDetailScreen(todoList: todoList),
-                        ),
-                      );
-                    },
-                    child: Padding(
-
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(todoList.name, style: TextStyle(color: ColorPalette.textColorPrimary)),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.edit, color: ColorPalette.iconColor),
-                                onPressed: () => _editTodoList(todoList),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete, color: ColorPalette.errorColor),
-                                onPressed: () => _deleteTodoList(todoList.id),
-                              ),
-                            ],
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: ColorPalette.primaryColorDark,
+                ),
+                child: Text(
+                  'Todo Tracker Menu',
+                  style: TextStyle(
+                    color: ColorPalette.textColorPrimaryDark,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.list),
+                title: Text('Todo Lists'),
+                onTap: () {
+                  Navigator.pop(context); // Close the drawer
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.logout),
+                title: Text('Logout'),
+                onTap: () {
+                  _logout(context);
+                },
+              ),
+            ],
+          ),
+        ),
+        body: FutureBuilder<List<TodoList>>(
+          future: _todoListsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: ColorPalette.errorColorDark)));
+            } else if (snapshot.data != null && snapshot.data!.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'No todo lists found.',
+                      style: TextStyle(fontSize: 18, color: ColorPalette.textColorSecondaryDark),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Tap the "+" button below to add a new list.',
+                      style: TextStyle(color: ColorPalette.textColorHintDark),
+                    ),
+                  ],
+                ),
+              );
+            } else if (snapshot.data != null) {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final todoList = snapshot.data![index];
+                  return Card(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TodoListDetailScreen(todoList: todoList),
                           ),
-                        ],
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(todoList.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () => _editTodoList(todoList),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () => _deleteTodoList(todoList.id),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            );
-          } else {
-            return Center(child: Text('No todo lists found.', style: TextStyle(color: ColorPalette.textColorPrimary)));
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateTodoListDialog, // Call the create dialog
-        child: Icon(Icons.add),
-        backgroundColor: ColorPalette.primaryColor,
+                  );
+                },
+              );
+            } else {
+              return Center(child: Text('No todo lists found.', style: TextStyle(color: ColorPalette.textColorPrimaryDark)));
+            }
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showCreateTodoListDialog, // Call the create dialog
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
