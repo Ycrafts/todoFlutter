@@ -6,35 +6,23 @@ import '../models/todo_list.dart';
 import 'package:intl/intl.dart';
 
 class ApiService {
-  final String baseUrl = 'url_to_backendAPI';
+
+  final String host = 'http://192.168.100.41';
+  late final String authBaseUrl;
+  late final String taskBaseUrl;
+  late final String profileBaseUrl;
 
   final _storage = FlutterSecureStorage();
 
-  Future<List<TodoList>> getAllTodoLists() async {
-    final String? token = await _storage.read(key: 'jwt_token');
-    print("token:$token");
-    if (token == null) {
-      throw Exception('No JWT found, user not authenticated');
-    }
-    final response = await http.get(
-      Uri.parse('$baseUrl/todo-lists'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $token',
-      },
-    );
-    if (response.statusCode == 200) {
-      final List<dynamic> body = jsonDecode(response.body);
-      return body.map((json) => TodoList.fromJson(json)).toList();
-    } else {
-      print('Failed to load todo lists with status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      throw Exception('Failed to load todo lists');
-    }
+  ApiService() {
+    authBaseUrl = '$host:8081/api/v1';
+    taskBaseUrl = '$host:8083/api/v1';
+    profileBaseUrl = '$host:8082/api/v1';
   }
 
   Future<String?> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/auth/login'),
+      Uri.parse('$authBaseUrl/auth/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -57,8 +45,9 @@ class ApiService {
 
   Future<String?> registerUser(String username, String email, String password) async {
     try {
+
       final response = await http.post(
-        Uri.parse('$baseUrl/users/register'),
+        Uri.parse('$authBaseUrl/users/register'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -96,13 +85,39 @@ class ApiService {
     }
   }
 
+  Future<List<TodoList>> getAllTodoLists() async {
+    final String? token = await _storage.read(key: 'jwt_token');
+    print("token:$token");
+    if (token == null) {
+      throw Exception('No JWT found, user not authenticated');
+    }
+    final response = await http.get(
+      Uri.parse('$taskBaseUrl/todo-lists'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+      },
+    );
+    final registrationUrl = '$taskBaseUrl//register';
+    print('Registration URL: $registrationUrl');
+    if (response.statusCode == 200) {
+      final List<dynamic> body = jsonDecode(response.body);
+      return body.map((json) => TodoList.fromJson(json)).toList();
+    } else {
+      print('Failed to load todo lists with status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception('Failed to load todo lists');
+    }
+  }
+
+
+
   Future<bool> deleteTodoList(int id) async {
     final String? token = await _storage.read(key: 'jwt_token');
     if (token == null) {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.delete(
-      Uri.parse('$baseUrl/todo-lists/$id'),
+      Uri.parse('$taskBaseUrl/todo-lists/$id'),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },
@@ -124,7 +139,7 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.put(
-      Uri.parse('$baseUrl/todo-lists/$id'),
+      Uri.parse('$taskBaseUrl/todo-lists/$id'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
@@ -151,7 +166,7 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.post(
-      Uri.parse('$baseUrl/todo-lists'),
+      Uri.parse('$taskBaseUrl/todo-lists'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
@@ -178,7 +193,7 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.get(
-      Uri.parse('$baseUrl/todo-items/lists/$todoListId'),
+      Uri.parse('$taskBaseUrl/todo-items/lists/$todoListId'),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },
@@ -205,11 +220,10 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
 
-
     final formattedDueDate = _formatDateTime(dueDateString);
 
     final response = await http.post(
-      Uri.parse('$baseUrl/todo-items'),
+      Uri.parse('$taskBaseUrl/todo-items'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
@@ -237,11 +251,10 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
 
-
     final formattedDueDate = _formatDateTime(dueDateString);
 
     final response = await http.put(
-      Uri.parse('$baseUrl/todo-items/$itemId'),
+      Uri.parse('$taskBaseUrl/todo-items/$itemId'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
@@ -283,7 +296,7 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.delete(
-      Uri.parse('$baseUrl/todo-items/$itemId'),
+      Uri.parse('$taskBaseUrl/todo-items/$itemId'),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },
@@ -304,7 +317,7 @@ class ApiService {
       throw Exception('No JWT found, user not authenticated');
     }
     final response = await http.put(
-      Uri.parse('$baseUrl/todo-items/${todoItem.id}'),
+      Uri.parse('$taskBaseUrl/todo-items/${todoItem.id}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
@@ -337,7 +350,7 @@ class ApiService {
     print('Retrieved JWT Token: $token');
 
     final response = await http.get(
-      Uri.parse('$baseUrl/users/me'),
+      Uri.parse('$profileBaseUrl/users/me'),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },
@@ -351,7 +364,6 @@ class ApiService {
       throw Exception('Failed to load user profile');
     }
   }
-
   Future<bool> updateUserProfile(String newEmail, String newUsername) async {
     final String? token = await _storage.read(key: 'jwt_token');
     if (token == null) {
@@ -359,15 +371,8 @@ class ApiService {
     }
 
     try {
-
-      final userProfile = await getUserProfile();
-      final userId = userProfile['id'];
-      if (userId == null) {
-        throw Exception('Could not retrieve current user ID');
-      }
-
       final response = await http.put(
-        Uri.parse('$baseUrl/users/$userId'),
+        Uri.parse('$profileBaseUrl/users/me'), // Changed the endpoint to /me
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',

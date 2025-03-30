@@ -122,14 +122,14 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                       final String username = _usernameController.text;
                       final String email = _emailController.text;
                       final String password = _passwordController.text;
-                      print('Username: $username');
-                      print('Email: $email');
-                      print('Password: $password');
+                      // print('Username: $username');
+                      // print('Email: $email');
+                      // print('Password: $password');
 
                       String? registrationResult = await _apiService.registerUser(username, email, password);
 
                       if (registrationResult == null || registrationResult == 'success') {
-                        // Registration successful (assuming null or 'success' indicates success)
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Account created successfully!'),
